@@ -4,6 +4,10 @@ Raspi + document scanner
 ## Dependencies
 ```sanebd``` and ```libsane``` must be installed as package.
 
+libopenjp2-7-dev
+
+libopenjp2.so.7
+
 ## sanebd and sane configuration
 sanebd must be configured properly:
 
@@ -12,3 +16,4 @@ sanebd
 
 ## Setup
 pip3 install requirements.txt
+
