@@ -85,7 +85,7 @@ class Scanner
   end
 
   def scan
-    cmd = "scanimage --batch=\"#{scans_path}\" -d net:localhost:canon_dr --source \"ADF Duplex\" --resolution #{resolution} --mode Gray --format #{FILE_FORMAT}"
+    cmd = "scanimage -d canon_dr --batch=\"#{scans_path}\" --source \"ADF Duplex\" --resolution #{resolution} --mode Gray --format #{FILE_FORMAT}"
     call(cmd)
   end
 
