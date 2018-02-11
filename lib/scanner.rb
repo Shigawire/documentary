@@ -1,5 +1,6 @@
-require 'thread/pool'
 require 'google_drive'
+require_relative 'command'
+require_relative 'workers'
 
 class Scanner
   FILE_FORMAT = 'tiff'
@@ -39,17 +40,19 @@ class Scanner
   end
 
   def ocr
-    pool = Thread.pool(MAX_THREADS)
     logger.info("About to OCR all files.")
-    Dir.glob("#{tmpdir}/*.#{FILE_FORMAT}").each do |filename|
-      pool.process do
-        cmd = "tesseract -l deu+eng #{filename} #{filename} pdf"
-        call(cmd)
-      end
+    Dir.glob("#{tmpdir}/*.#{FILE_FORMAT}").each do |path|
+      Workers::OCRWorker.perform_async(path)
     end
-    pool.shutdown
 
-    raise 'Tesseract failed.' unless verify_tesseract
+    begin
+      retries = 0
+      raise 'Tesseract is not finished' unless verify_tesseract
+    rescue
+      sleep 1
+      retry if (retries += 1) < 120
+      raise 'Tesseract failed'
+    end
   end
 
   def upload_to_google
@@ -65,7 +68,8 @@ class Scanner
   def postprocess
     logger.info("Merging all PDFs.")
     cmd = "gs -dDownsampleColorImages=true -dColorImageResolution=150 -sDEVICE=pdfwrite -dPDFA=2 -dBATCH -dNOPAUSE -sProcessColorModel=DeviceRGB -sColorConversionStrategy=/RGB -sPDFACompatibilityPolicy=1 -sOutputFile=#{tmpdir}/postprocessed.pdf #{tmpdir}/*.tiff.pdf"
-    call(cmd)
+    logger.info("Calling #{cmd}")
+    Command.(cmd)
   end
 
   def scans_path
@@ -82,15 +86,7 @@ class Scanner
 
   def scan
     cmd = "scanimage -d \"#{SANE_DEVICE_NAME}\" --batch=\"#{scans_path}\" --source \"#{SANE_SOURCE_NAME}\" --resolution #{resolution} --mode Gray --format #{FILE_FORMAT}"
-    call(cmd)
-  end
-
-  def call(cmd)
     logger.info("Calling #{cmd}")
-    `#{cmd}`.tap do
-      if (status = $?.exitstatus) != 0
-        raise "#{cmd} exited with status #{status}"
-      end
-    end
+    Command.(cmd)
   end
 end

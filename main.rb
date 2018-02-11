@@ -5,6 +5,7 @@ require 'fileutils'
 require 'thread/pool'
 require 'rubygems'
 require 'bundler/setup'
+require 'sidekiq'
 
 require_relative 'lib/scanner'
 
