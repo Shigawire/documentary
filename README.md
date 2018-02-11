@@ -15,5 +15,6 @@ sane/sane.dll must hold net, only.
 sanebd
 
 ## Setup
-pip3 install requirements.txt
-
+Set the following environment variables:
+- `SANE_DEVICE_NAME`
+- `GDRIVE_FOLDER_ID`
