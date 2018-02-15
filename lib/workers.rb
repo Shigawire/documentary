@@ -1,1 +1,1 @@
-require_relative 'workers/ocr_worker'
+require_relative 'workers/scan_job_worker'

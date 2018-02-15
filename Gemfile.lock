@@ -59,6 +59,8 @@ GEM
       connection_pool (~> 2.2, >= 2.2.0)
       rack-protection (>= 1.5.0)
       redis (>= 3.3.5, < 5)
+    sidekiq-batch (0.1.4)
+      sidekiq (>= 3)
     signet (0.8.1)
       addressable (~> 2.3)
       faraday (~> 0.9)
@@ -72,6 +74,7 @@ PLATFORMS
 DEPENDENCIES
   google_drive
   sidekiq
+  sidekiq-batch
 
 BUNDLED WITH
    1.16.1
