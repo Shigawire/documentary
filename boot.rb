@@ -7,7 +7,7 @@ require 'sidekiq'
 require 'sidekiq/batch'
 require 'active_support/inflector' # sidekiq/batch uses constantize
 
-require_relative 'lib/scan_file'
-require_relative 'lib/scan_job'
+require_relative 'lib/command'
 require_relative 'lib/scanner'
 require_relative 'lib/workers'
+require_relative 'lib/workflows'

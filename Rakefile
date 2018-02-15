@@ -1,4 +1,4 @@
-namespace :jobs do
+namespace :sidekiq do
   task :clear do
     require 'sidekiq/api'
     Sidekiq::Queue.new.clear

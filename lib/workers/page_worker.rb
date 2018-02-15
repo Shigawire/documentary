@@ -1,11 +1,11 @@
 module Workers
-  class ScanFileWorker
+  class PageWorker
     include Sidekiq::Worker
 
     sidekiq_options queue: :ocr
 
     def perform(path)
-      ScanFile.new(path: path).process
+      Workflows::Page.new(path: path).process
     end
   end
 end

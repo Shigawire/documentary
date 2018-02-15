@@ -1,7 +1,3 @@
-require_relative 'command'
-require_relative 'workers'
-require_relative 'scan_job'
-
 class Scanner
   FILE_FORMAT = ENV.fetch('FILE_FORMAT', 'tiff')
   FILE_FORMATTING = "%03d.#{FILE_FORMAT}"
@@ -23,7 +19,7 @@ class Scanner
 
   def perform
     scan if must_scan
-    Workers::ScanJobWorker.perform_async(tmpdir)
+    Workers::JobWorker.perform_async(tmpdir)
     logger.info "Created ScanJob for #{tmpdir}"
   end
 
