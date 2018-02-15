@@ -7,7 +7,7 @@ RUN apt-get update && \
                         tesseract-ocr-eng ghostscript curl ruby ruby-dev gcc \
                         make libxslt-dev libxml2-dev zlib1g-dev libconfuse-dev \
                         libsane-dev libudev-dev libusb-dev libdbus-1-dev libsane-dev \
-                        dbus inetutils-inetd && \
+                        dbus xinetd && \
     groupadd --gid 1000 app && \
     adduser --disabled-login --uid 1000 --gid 1000 --gecos '' app && \
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
@@ -29,9 +29,9 @@ COPY scripts/scanbd.conf /usr/local/etc/scanbd/scanbd.conf
 COPY scripts/saned.conf /usr/local/etc/scanbd/saned.conf
 COPY scripts/net.conf /etc/sane.d/net.conf
 COPY scripts/scanbd_dbus.conf /etc/dbus-1/system.d/scanbd_debus.conf
-COPY scripts/sane-port /etc/inetd.d/sane-port
+COPY scripts/sane-port /etc/xinetd.d/sane-port
 
-RUN echo "sane-port stream tcp4 nowait saned /usr/local/sbin/scanbm scanbm" >> /etc/inetd.conf
+#RUN echo "sane-port stream tcp4 nowait saned /usr/local/sbin/scanbm scanbm" >> /etc/inetd.conf
 RUN mkdir -p /var/run/dbus/
 
 # install ruby app
@@ -56,3 +56,4 @@ CMD ["/bin/bash"]
 # CMDS:
 # dbus-daemon --nofork --system
 # inetutils-inetd -d
+# scanbm -f
