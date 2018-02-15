@@ -1,4 +1,4 @@
-FROM ruby:2.5
+FROM resin/raspberrypi2-debian
 
 RUN apt-get update && \
     apt-get -y install locales sane-utils tesseract-ocr tesseract-ocr-deu tesseract-ocr-eng ghostscript && \
@@ -8,16 +8,20 @@ RUN apt-get update && \
     locale-gen && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    echo test >> /etc/sane.d/dll.conf
+    echo "test\ncanon_dr" >> /etc/sane.d/dll.conf
 
-COPY Gemfile* /usr/src/app/
-
+#COPY Gemfile* /usr/src/app/
+COPY . /usr/src/app
 RUN echo '2.5.0' > /usr/src/app/.ruby-version && \
     cd /usr/src/app && \
     bundle install -j 8
 
 USER app
-WORKDIR /usr/src/app
+
+#WORKDIR /usr/src/app
+
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
+
+CMD ["/bin/bash"]
