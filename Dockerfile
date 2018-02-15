@@ -42,8 +42,7 @@ RUN cd /usr/src/app && \
 
 #RUN [ "cross-build-end" ]
 
-RUN chown -R app:app /usr/src/app
-
+RUN chown -R app:app /usr/src/app && chmod +x /usr/src/app/run.sh
 USER app
 
 WORKDIR /usr/src/app
@@ -52,7 +51,7 @@ ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
-CMD ["run.sh"]
+CMD ["/usr/src/app/run.sh"]
 #CMD ["ls"]
 
 # CMDS:
