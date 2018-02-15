@@ -1,7 +1,7 @@
-FROM resin/armv7hf-debian
+FROM resin/armv7hf-debian:stretch
 ENV QEMU_EXECVE=1
 
-RUN [ "cross-build-start" ]
+#RUN [ "cross-build-start" ]
 
 RUN apt-get update && \
     apt-get -y install  locales sane-utils tesseract-ocr tesseract-ocr-deu \
@@ -40,7 +40,7 @@ RUN gem install bundler
 RUN cd /usr/src/app && \
     bundle install -j 8
 
-RUN [ "cross-build-end" ]
+#RUN [ "cross-build-end" ]
 
 RUN chown -R app:app /usr/src/app
 
