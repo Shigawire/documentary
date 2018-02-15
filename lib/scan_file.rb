@@ -1,10 +1,10 @@
 require_relative 'command'
 
 class ScanFile
-  attr_accessor :filename, :fullpath, :ocr_result
+  attr_accessor :filename, :path, :ocr_result
 
-  def initialize(fullpath:)
-    self.fullpath = fullpath
+  def initialize(path:)
+    self.path = path
   end
 
   def process
@@ -17,8 +17,7 @@ class ScanFile
   end
 
   def perform_ocr
-    self.ocr_result = Command.("tesseract -l deu+eng #{fullpath} #{fullpath} pdf")
-    #self.ocr_result = Workers::OCRWorker.new.perform(fullpath)
+    self.ocr_result = Command.("tesseract -l deu+eng #{path} #{path} pdf")
   end
 
   def is_empty?
@@ -34,5 +33,3 @@ class ScanFile
   def deskew
   end
 end
-
-test

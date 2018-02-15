@@ -1,8 +1,9 @@
 module Workers
   class ScanJobWorker
     include Sidekiq::Worker
-    def perform(scanjob)
-      scanjob.perform
+
+    def perform(tmpdir)
+      ScanJob.new(tmpdir).perform
     end
   end
 end

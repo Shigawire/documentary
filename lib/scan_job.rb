@@ -1,42 +1,27 @@
 require 'sidekiq'
-require 'sidekiq/batches'
+require 'sidekiq/batch'
 require 'logger'
 
 require_relative 'command'
 require_relative 'workers'
 
-$stdout.sync = true
-
 class ScanJob
-  FILE_FORMAT = ENV.fetch('FILE_FORMAT')
+  FILE_FORMAT = ENV.fetch('FILE_FORMAT', 'tiff')
 
-  attr_accessor :tmpdir, :scanfiles
-
-  def self.preprocess_callback(tmpdir)
-    self.new(tmpdir).postprocess_scanfiles
-  end
+  attr_accessor :tmpdir, :files_to_process, :logger
 
   def initialize(tmpdir)
     self.logger = Logger.new(STDOUT)
     self.tmpdir = tmpdir
-    self.scanfiles = build_scanfiles
+    self.files_to_process = Dir.glob("#{tmpdir}/*.#{FILE_FORMAT}")
   end
 
   def perform
-    preprocess_scanfiles
-    # unless Dir.glob("#{tmpdir}/*.pdf").any?
-    #   preprocess_scanfiles
-    # else
-    #   postprocess_scanfiles
-    # end
-  end
-
-  def preprocess_scanfiles
     batch = Sidekiq::Batch.new
-    batch.on(:success, 'ScanJob#preprocess_callback', tmpdir: tmpdir)
+    batch.on(:success, Postprocessor, tmpdir)
     batch.jobs do
-      scanfiles.each do |scanfile|
-        Workers::ScanFileWorker.perform_async(scanfile)
+      files_to_process.each do |path|
+        Workers::ScanFileWorker.perform_async(path)
       end
     end
   end
@@ -62,9 +47,9 @@ class ScanJob
     # count pages
   end
 
-private
-  def build_scanfiles
-    filelist = Dir.glob("#{tmpdir}/*.#{FILE_FORMAT}")
-    filelist.each { |filepath| ScanFile.new(fullpath: filepath) }
+  class Postprocessor
+    def on_success(_status, options)
+      ScanJob.new(options).postprocess_scanfiles
+    end
   end
 end
