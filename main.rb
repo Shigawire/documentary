@@ -15,4 +15,4 @@ require_relative 'lib/workers'
 
 $stdout.sync = true
 
-Scanner.new.perform
+Scanner.new(from_directory: ARGV[0]).perform
