@@ -57,3 +57,4 @@ CMD ["/bin/bash"]
 # dbus-daemon --nofork --system
 # inetutils-inetd -d
 # scanbm -f
+# SANE_CONFIG_DIR=/usr/local/etc/scanbd /usr/local/sbin/scanbd -d7 -s-f -c /usr/local/etc/scanbd/scanbd.conf
