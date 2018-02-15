@@ -2,7 +2,9 @@ version: '3'
 services:
   app: &app
     image: shigawire/documentary
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     volumes:
       - .:/usr/src/app
     command: bash
