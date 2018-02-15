@@ -14,7 +14,8 @@ COPY Gemfile* /usr/src/app/
 
 RUN echo '2.5.0' > /usr/src/app/.ruby-version && \
     cd /usr/src/app && \
-    bundle install -j 8
+    bundle install -j 8 && \
+    chown -R app /usr/local/bundle
 
 USER app
 WORKDIR /usr/src/app
