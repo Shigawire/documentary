@@ -43,15 +43,16 @@ RUN [ "cross-build-end" ]
 
 RUN chown -R app:app /usr/src/app
 
-#USER app
+USER app
 
-#WORKDIR /usr/src/app
+WORKDIR /usr/src/app
 
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
-CMD ["/bin/bash"]
+CMD ["run.sh"]
+#CMD ["ls"]
 
 # CMDS:
 # dbus-daemon --nofork --system
