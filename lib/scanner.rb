@@ -5,30 +5,19 @@ class Scanner
   SANE_DEVICE_NAME = ENV.fetch('SANE_DEVICE_NAME', 'canon_dr')
   SANE_SOURCE_NAME = ENV.fetch('SANE_SOURCE_NAME', 'ADF Duplex')
 
-  attr_accessor :tmpdir, :resolution, :logger, :scanjob, :must_scan
+  attr_accessor :directory, :logger
 
-  def initialize(from_directory:)
+  def initialize(directory:)
     self.logger = Logger.new(STDOUT)
-    self.tmpdir = from_directory || begin
-      logger.info "Creating tempdir"
-      Dir.mktmpdir
-    end
-    self.must_scan = !from_directory
-    self.resolution = DEFAULT_RESOLUTION
+    self.directory = directory
   end
 
   def perform
-    scan if must_scan
-    Workers::JobWorker.perform_async(tmpdir)
-    logger.info "Created ScanJob for #{tmpdir}"
+    cmd = "scanimage -d \"#{SANE_DEVICE_NAME}\" --batch=\"#{scans_path}\" --source \"#{SANE_SOURCE_NAME}\" --resolution #{DEFAULT_RESOLUTION} --mode Gray --format #{FILE_FORMAT}"
+    Command.(cmd)
   end
 
   def scans_path
-    "#{tmpdir}/#{FILE_FORMATTING}"
-  end
-
-  def scan
-    cmd = "scanimage -d \"#{SANE_DEVICE_NAME}\" --batch=\"#{scans_path}\" --source \"#{SANE_SOURCE_NAME}\" --resolution #{resolution} --mode Gray --format #{FILE_FORMAT}"
-    Command.(cmd)
+    directory.path.join(FILE_FORMATTING)
   end
 end
