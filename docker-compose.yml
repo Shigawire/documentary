@@ -1,6 +1,6 @@
 version: '3'
 services:
-  app:
+  app: &app
     image: shigawire/documentary
     build: .
     volumes:
@@ -11,5 +11,11 @@ services:
       SANE_SOURCE_NAME: Automatic Document Feeder
       REDIS_URL: redis://redis/10
     depends_on: [redis]
+  worker:
+    <<: *app
+    command: sidekiq -c 10 -r /usr/src/app/boot.rb
+  ocr_worker:
+    <<: *app
+    command: sidekiq -c 4 -q ocr -r /usr/src/app/boot.rb
   redis:
     image: redis
