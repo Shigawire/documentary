@@ -1,4 +1,5 @@
 FROM resin/armv7hf-debian:stretch
+ENV QEMU_EXECVE=1
 
 RUN [ "cross-build-start" ]
 
