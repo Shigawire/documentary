@@ -2,7 +2,7 @@ class Scanner
   FILE_FORMAT = ENV.fetch('FILE_FORMAT', 'tiff')
   FILE_FORMATTING = "%03d.#{FILE_FORMAT}"
   DEFAULT_RESOLUTION = 300
-  SANE_DEVICE_NAME = ENV.fetch('SANE_DEVICE_NAME')
+  SANE_DEVICE_NAME = ENV.fetch('SANE_DEVICE_NAME', 'canon_dr')
   SANE_SOURCE_NAME = ENV.fetch('SANE_SOURCE_NAME', 'ADF Duplex')
 
   attr_accessor :tmpdir, :resolution, :logger, :scanjob, :must_scan

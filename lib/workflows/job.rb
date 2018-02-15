@@ -1,6 +1,7 @@
 module Workflows
   class Job
     FILE_FORMAT = ENV.fetch('FILE_FORMAT', 'tiff')
+    GDRIVE_FOLDER_ID = ENV.fetch('GDRIVE_FOLDER_ID', nil)
 
     attr_accessor :tmpdir, :files_to_process, :logger
 
@@ -33,12 +34,23 @@ module Workflows
     end
 
     def upload
+      if !GDRIVE_FOLDER_ID
+        logger.info('Skipped upload to Google Drive.')
+        return
+      end
+
       logger.info("Uploading finished pdf.")
+      session = GoogleDrive::Session.from_config('config.json')
+      session.upload_from_file("#{tmpdir}/postprocessed.pdf", safe_filename, { parents: [GDRIVE_FOLDER_ID], convert: false })
     end
 
     def verify
       # download
       # count pages
+    end
+
+    def safe_filename
+      Time.now.strftime("%Y-%m-%d - %H_%M_%S.pdf")
     end
 
     class Postprocessor
