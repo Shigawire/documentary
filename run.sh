@@ -9,6 +9,9 @@ cleanup ()
   exit 0
 }
 
+echo "mounting usb devices properly!"
+mount -t devtmpfs none /dev
+
 trap cleanup SIGINT SIGTERM
 
 while [ 1 ]
