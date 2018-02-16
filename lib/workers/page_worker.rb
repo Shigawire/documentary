@@ -5,7 +5,7 @@ module Workers
     sidekiq_options queue: :ocr
 
     def perform(path)
-      Workflows::Page.new(path: path).process
+      Workflows::Page.new(path: Pathname.new(path)).process
     end
   end
 end
