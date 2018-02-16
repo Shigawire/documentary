@@ -5,8 +5,8 @@ ENV QEMU_EXECVE=1
 
 # install dependencies
 RUN apt-get update && \
-    apt-get -y install locales sane-utils ghostscript curl ruby ruby-dev gcc \
-    dumb-init redis-server git libtool make libxslt-dev libxml2-dev zlib1g-dev \
+    apt-get -y install locales sane-utils ghostscript curl ruby ruby-dev gcc automake \
+    dumb-init redis-server git libtool make libxslt-dev libxml2-dev zlib1g-dev build-essential \
     libconfuse-dev libsane-dev libudev-dev libusb-dev libdbus-1-dev libsane-dev && \
     groupadd --gid 1000 app && \
     adduser --disabled-login --uid 1000 --gid 1000 --gecos '' app && \
@@ -17,7 +17,7 @@ RUN apt-get update && \
     echo "" > /etc/sane.d/dll.conf
 
 # build Tesseract 3.05
-RUN apt update && apt  && tmpdir="$(mktemp -d)" && \
+RUN tmpdir="$(mktemp -d)" && \
  cd "$tmpdir" && \
  curl -sSL -o "$tmpdir/leptonica.tar.gz" https://github.com/DanBloomberg/leptonica/releases/download/1.74.4/leptonica-1.74.4.tar.gz && \
  tar xf leptonica.tar.gz && \
