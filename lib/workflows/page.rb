@@ -1,5 +1,6 @@
 module Workflows
   class Page
+    FILE_FORMAT = ENV.fetch('FILE_FORMAT', 'tiff')
     attr_accessor :path, :ocr_result
 
     def initialize(path:)
@@ -7,16 +8,22 @@ module Workflows
     end
 
     def process
+      enhance
       deskew
       perform_ocr
       destroy! if empty?
     end
 
+    def enhance
+      Command.("mogrify #{path} -normalize -level 10%,90% -sharpen 0x1")
+    end
+
     def deskew
+      Command.("convert #{path} -deskew 80% +repage #{page_basename}_deskewed.#{FILE_FORMAT}")
     end
 
     def perform_ocr
-      self.ocr_result = Command.("tesseract -l deu+eng #{path} #{path} pdf")
+      self.ocr_result = Command.("tesseract -l deu+eng #{page_basename}_deskewed.#{FILE_FORMAT} #{path} pdf")
     end
 
     def empty?
@@ -29,7 +36,8 @@ module Workflows
       # correct me, instead! #deskew
     end
 
-    def deskew
+    def page_basename
+      path.basename(".#{FILE_FORMAT}")
     end
   end
 end
