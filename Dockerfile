@@ -59,7 +59,6 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     rm -rf /var/lib/apt/lists/*
 
 #RUN [ "cross-build-end" ]
-
 #RUN chown -R app:app /usr/src/app && chmod +x /usr/src/app/run.sh
 
 USER app
