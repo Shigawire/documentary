@@ -1,21 +1,20 @@
 FROM resin/armv7hf-debian:stretch
 
-ENV BUILD_PACKAGES=ruby-dev gcc automake git libtool make libxslt-dev libxml2-dev zlib1g-dev build-essential libconfuse-dev libsane-dev libudev-dev libusb-dev libdbus-1-dev libsane-dev curl
-ENV RUNTIME_PACKAGES=locales sane-utils ghostscript ruby dumb-init redis-server
+ENV BUILD_PACKAGES="ruby-dev gcc automake git libtool make libxslt-dev libxml2-dev zlib1g-dev build-essential libconfuse-dev libsane-dev libudev-dev libusb-dev libdbus-1-dev libsane-dev curl"
+ENV RUNTIME_PACKAGES="locales sane-utils ghostscript ruby dumb-init redis-server"
 ENV TESSDATA_PREFIX=/usr/local/share
 
 COPY . /usr/src/app
 COPY scripts/scanbd.conf /usr/local/etc/scanbd/scanbd.conf
 
 # install dependencies
-# build Tesseract 3.05
-# install scanbd
 RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     groupadd --gid 1000 app && \
     adduser --disabled-login --uid 1000 --gid 1000 --gecos '' app && \
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen && \
     echo "" > /etc/sane.d/dll.conf && \
+    # build Tesseract 3.05
     tmpdir="$(mktemp -d)" && \
     cd "$tmpdir" && \
     curl -sSL -o "$tmpdir/leptonica.tar.gz" https://github.com/DanBloomberg/leptonica/releases/download/1.74.4/leptonica-1.74.4.tar.gz && \
@@ -40,6 +39,7 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     curl -sSL -o /usr/local/share/tessdata/eng.traineddata https://github.com/tesseract-ocr/tessdata/raw/3.04.00/eng.traineddata && \
     cd / && \
     rm -rf "$tmpdir" && \
+    # install scanbd
     cd /usr/src/app/src/scanbd-code-244-trunk && \
     ./configure --enable-udev && \
     make all && \
@@ -50,13 +50,13 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     gem install bundler && \
     cd /usr/src/app && \
     bundle install -j 8 && \
-    chown -R app:app /usr/src/app && chmod +x /usr/src/app/run.sh
-
-# clean up
-RUN AUTO_ADDED_PACKAGES=`apt-mark showauto` \
+    chown -R app:app /usr/src/app && chmod +x /usr/src/app/run.sh && \
+    #clean up
+    AUTO_ADDED_PACKAGES=`apt-mark showauto` \
     apt-get remove --purge -y $BUILD_PACKAGES $AUTO_ADDED_PACKAGES && \
+    apt-get autoremove && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /var/lib/apt/lists/*
 
 #RUN [ "cross-build-end" ]
 
