@@ -1,26 +1,11 @@
 #!/bin/bash
-#
-# echo "This is a idle script (infinite loop) to keep container running."
-# echo "Please replace this script."
-#
-# cleanup ()
-# {
-#   kill -s SIGTERM $!
-#   exit 0
-# }
 
-echo "mounting usb devices properly!"
+echo "Mounting USB devices..."
 mount -t devtmpfs none /dev
 
-# trap cleanup SIGINT SIGTERM
-#
-# while [ 1 ]
-# do
-#   sleep 60 &
-#   wait $!
-# done
-
+echo "Starting subprocesses..."
 dumb-init \
+  redis-server && \
   sidekiq -c 10 -r /usr/src/app/boot.rb && \
   sidekiq -c 4 -q ocr -r /usr/src/app/boot.rb && \
   SANE_CONFIG_DIR=/usr/local/etc/scanbd /usr/local/sbin/scanbd -f -c /usr/local/etc/scanbd/scanbd.conf
