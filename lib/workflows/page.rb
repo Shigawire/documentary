@@ -14,30 +14,38 @@ module Workflows
       destroy! if empty?
     end
 
+    def empty?
+      ocr_result.match?(/Empty page!!/)
+    end
+
+    def pdf_path
+      "#{path}.pdf"
+    end
+
+    private
+
     def enhance
       Command.("mogrify #{path} -normalize -level 10%,90% -sharpen 0x1")
     end
 
     def deskew
-      Command.("convert #{path} -deskew 80% +repage #{page_basename}_deskewed.#{FILE_FORMAT}")
+      Command.("convert #{path} -deskew 80% +repage #{deskewed_path}")
     end
 
     def perform_ocr
-      self.ocr_result = Command.("tesseract -l deu+eng #{page_basename}_deskewed.#{FILE_FORMAT} #{path} pdf")
-    end
-
-    def empty?
-      ocr_result.include? 'empty file'
+      self.ocr_result = Command.("tesseract -l deu+eng #{deskewed_path} #{path} pdf")
     end
 
     def destroy!
-      # delete me, because I am empty or ugly :(
-      # What's beauty, anyways? Perfectly aligned rectangles?
-      # correct me, instead! #deskew
+      FileUtils.rm pdf_path
     end
 
     def page_basename
       path.basename(".#{FILE_FORMAT}")
+    end
+
+    def deskewed_path
+      path.dirname.join("#{page_basename}_deskewed.#{FILE_FORMAT}")
     end
   end
 end
