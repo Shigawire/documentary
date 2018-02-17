@@ -4,11 +4,12 @@ ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
-ENV BUILD_PACKAGES="ruby-dev gcc automake git libtool make libxslt-dev libxml2-dev zlib1g-dev build-essential libconfuse-dev libsane-dev libudev-dev libusb-dev libdbus-1-dev libsane-dev curl"
-ENV RUNTIME_PACKAGES="locales sane-utils ghostscript ruby dumb-init redis-server"
+ENV BUILD_PACKAGES="ruby-dev gcc automake git libtool make libxslt-dev libxml2-dev zlib1g-dev build-essential libsane-dev libudev-dev libusb-dev libdbus-1-dev curl"
+ENV RUNTIME_PACKAGES="locales sane-utils ghostscript ruby dumb-init redis-server gosu libconfuse-dev"
 ENV TESSDATA_PREFIX=/usr/local/share
 
 COPY . /usr/src/app
+COPY scripts/scanbd.conf /usr/local/etc/scanbd/scanbd.conf
 
 # install dependencies
 RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
@@ -61,18 +62,5 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY scripts/scanbd.conf /usr/local/etc/scanbd/scanbd.conf
-
-RUN apt update && apt install gosu
-#USER app
-
 WORKDIR /usr/src/app
-
 CMD ["/usr/src/app/run.sh"]
-#CMD ["ls"]
-
-# CMDS:
-# dbus-daemon --nofork --system
-# inetutils-inetd -d
-# scanbm -f
-# SANE_CONFIG_DIR=/usr/local/etc/scanbd /usr/local/sbin/scanbd -d7 -s-f -c /usr/local/etc/scanbd/scanbd.conf
