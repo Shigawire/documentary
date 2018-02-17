@@ -5,16 +5,17 @@ ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
 ENV BUILD_PACKAGES="ruby-dev gcc automake git libtool make libxslt-dev libxml2-dev zlib1g-dev build-essential libsane-dev libudev-dev libusb-dev libdbus-1-dev curl"
-ENV RUNTIME_PACKAGES="locales sane-utils ghostscript ruby dumb-init redis-server gosu libconfuse-dev"
+ENV RUNTIME_PACKAGES="locales sane-utils ghostscript ruby supervisor redis-server libconfuse-dev"
 ENV TESSDATA_PREFIX=/usr/local/share
 
 COPY . /usr/src/app
-COPY scripts/scanbd.conf /usr/local/etc/scanbd/scanbd.conf
+COPY scripts/99-saned.rules /etc/udev/rules.d/99-sanebd.rules
 
 # install dependencies
 RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     groupadd --gid 1000 app && \
     adduser --disabled-login --uid 1000 --gid 1000 --gecos '' app && \
+    usermod -G scanner app && \
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen && \
     echo "" > /etc/sane.d/dll.conf && \
@@ -48,7 +49,7 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     ./configure --enable-udev && \
     make all && \
     make install && \
-    echo "test\ncanon_dr" > /usr/local/etc/scanbd/dll.conf && \
+    echo "canon_dr" > /usr/local/etc/scanbd/dll.conf && \
     cp /etc/sane.d/canon_dr.conf /usr/local/etc/scanbd/ && \
     # install ruby app
     gem install bundler && \
@@ -61,6 +62,9 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     apt-get autoremove && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+# keep this here. When installing sane, this file would be overwritten.
+COPY scripts/scanbd.conf /usr/local/etc/scanbd/scanbd.conf
 
 WORKDIR /usr/src/app
 CMD ["/usr/src/app/run.sh"]
