@@ -63,7 +63,8 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
 
 COPY scripts/scanbd.conf /usr/local/etc/scanbd/scanbd.conf
 
-USER app
+RUN apt update && apt install gosu
+#USER app
 
 WORKDIR /usr/src/app
 
