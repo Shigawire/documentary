@@ -1,9 +1,10 @@
 class Command
   def self.call(cmd)
-    Logger.new(STDOUT).debug("Running Command \"#{cmd}\"")
-    `bash -c "#{cmd} 2>&1"`.tap do
+    escaped = cmd.gsub("\""){"\\\""}
+    Logger.new(STDOUT).debug("Running Command \"#{escaped}\"")
+    `bash -c "#{escaped} 2>&1"`.tap do
       if (status = $?.exitstatus) != 0
-        raise "#{cmd} exited with status #{status}"
+        raise "#{escaped} exited with status #{status}"
       end
     end
   end
