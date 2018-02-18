@@ -6,6 +6,9 @@ mount -t devtmpfs none /dev
 #re-trigger udev to recognize new devices and set udev rules properly
 udevadm trigger
 
+#make app owner
+chown -R app:app /usr/src/app
+
 echo "Starting subprocesses..."
 supervisord -n -c /etc/supervisor/supervisord.conf
 

@@ -62,7 +62,7 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --chown=app:app . /usr/src/app
+COPY . /usr/src/app
 COPY scripts/scanbd.conf /usr/local/etc/scanbd/scanbd.conf
 COPY scripts/99-saned.rules /etc/udev/rules.d/99-sanebd.rules
 COPY scripts/supervisor.conf /etc/supervisor/conf.d/app.conf
