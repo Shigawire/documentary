@@ -53,7 +53,7 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     gem install bundler && \
     cd /usr/src/app && \
     bundle install -j 8 && \
-    chown -R app:app /usr/src/app && chmod +x /usr/src/app/run.sh && \
+    chown -R app:app /usr/local/bundle && \
     #clean up
     AUTO_ADDED_PACKAGES=`apt-mark showauto` \
     apt-get remove --purge -y $BUILD_PACKAGES $AUTO_ADDED_PACKAGES && \
