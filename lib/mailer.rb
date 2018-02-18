@@ -1,7 +1,7 @@
 class Mailer
   EMAIL_ADDRESS = ENV.fetch('EMAIL_ADDRESS', nil)
   SMTP_HOST = ENV.fetch('SMTP_HOST', nil)
-  SMTP_USERNAME = ENV.fetch('SMTP_HOST', nil)
+  SMTP_USERNAME = ENV.fetch('SMTP_USERNAME', nil)
   SMTP_PASSWORD = ENV.fetch('SMTP_PASSWORD', nil)
 
 
@@ -25,7 +25,7 @@ class Mailer
       from     'scanbot@urmel.io'
       to       EMAIL_ADDRESS
       subject  'Scanfile from Scanbot'
-      body     File.read(file)
+      body     ''
       add_file "#{file}"
     end
   end

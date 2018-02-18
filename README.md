@@ -42,6 +42,13 @@ This will open an interactive shell guiding you through the OAuth Token exchange
 **This command must only be run once. OAuth credentials are stored in the persistent /data volue**
 
 ## Email sending
+Set the following environment variables to have the scanned file sent as attachment:
+```
+EMAIL_ADDRESS
+SMTP_HOST
+SMTP_USERNAME
+SMTP_PASSWORD
+```
 
 ## Important
 The container must mount devices manually. Otherwise, the resin guests do not recognize remounted hardware.
