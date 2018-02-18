@@ -48,12 +48,13 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     ./configure --enable-udev && \
     make all && \
     make install && \
+    cd / && \
     rm -rf /tmp/scanbd-src && \
     # install ruby app
     gem install bundler && \
     cd /usr/src/app && \
     bundle install -j 8 && \
-    chown -R app:app /usr/local/bundle && \
+    #chown -R app:app /usr/local/bundle && \
     #clean up
     AUTO_ADDED_PACKAGES=`apt-mark showauto` \
     apt-get remove --purge -y $BUILD_PACKAGES $AUTO_ADDED_PACKAGES && \
