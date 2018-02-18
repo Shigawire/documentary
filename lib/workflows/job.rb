@@ -52,7 +52,7 @@ module Workflows
       end
 
       logger.info("Uploading finished pdf.")
-      session = GoogleDrive::Session.from_config('config.json')
+      session = GoogleDrive::Session.from_config('/data/google-oauth-config.json')
       session.upload_from_file(postprocessed_file, safe_filename, { parents: [GDRIVE_FOLDER_ID], convert: false })
     end
 

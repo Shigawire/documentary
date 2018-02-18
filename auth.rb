@@ -15,11 +15,11 @@ def main
     "client_secret": "#{ENV['GOOGLE_OAUTH_CLIENT_SECRET']}"
   }
 
-  File.open('config.json', 'w') do |f|
+  File.open('/data/google-oauth-config.json', 'w') do |f|
     f.write(JSON.pretty_generate(credentials))
   end
 
-  session = GoogleDrive::Session.from_config("config.json")
+  session = GoogleDrive::Session.from_config('/data/google-oauth-config.json')
 
   puts "Done. You are now authenticated against Google Drive."
 end
