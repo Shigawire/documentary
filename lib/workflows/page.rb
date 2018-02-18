@@ -15,7 +15,7 @@ module Workflows
     end
 
     def empty?
-      ocr_result.match?(/Empty page!!/)
+      ocr_result.match(/Empty page!!/)
     end
 
     def pdf_path
