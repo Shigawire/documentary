@@ -13,7 +13,7 @@ class Scanner
   end
 
   def perform
-    cmd = "scanimage -d \"#{SANE_DEVICE_NAME}\" --batch=\"#{scans_path}\" --source \"#{SANE_SOURCE_NAME}\" --resolution #{DEFAULT_RESOLUTION} --mode Gray --format #{FILE_FORMAT}"
+    cmd = "scanimage -d \"#{SANE_DEVICE_NAME}\" -l 0 -y 0 -x 210 -y 297 --page-width 210 --page-height 297 --rollerdeskew=yes --swcrop=yes --batch=\"#{scans_path}\" --source \"#{SANE_SOURCE_NAME}\" --resolution #{DEFAULT_RESOLUTION} --mode Gray --format #{FILE_FORMAT}"
     Command.(cmd)
   end
 
