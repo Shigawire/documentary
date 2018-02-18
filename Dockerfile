@@ -10,6 +10,7 @@ ENV TESSDATA_PREFIX=/usr/local/share
 
 COPY . /usr/src/app
 COPY scripts/99-saned.rules /etc/udev/rules.d/99-sanebd.rules
+COPY scripts/supervisor.conf /etc/supervisor/supervisord.conf
 
 # install dependencies
 RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
@@ -18,7 +19,7 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     usermod -G scanner app && \
     echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && \
     locale-gen && \
-    echo "" > /etc/sane.d/dll.conf && \
+    echo "canon_dr" > /etc/sane.d/dll.conf && \
     # build Tesseract 3.05
     tmpdir="$(mktemp -d)" && \
     cd "$tmpdir" && \
@@ -49,8 +50,6 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     ./configure --enable-udev && \
     make all && \
     make install && \
-    echo "canon_dr" > /usr/local/etc/scanbd/dll.conf && \
-    cp /etc/sane.d/canon_dr.conf /usr/local/etc/scanbd/ && \
     # install ruby app
     gem install bundler && \
     cd /usr/src/app && \

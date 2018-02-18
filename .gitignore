@@ -102,3 +102,4 @@ ENV/
 config.json
 
 .DS_Store
+.pid

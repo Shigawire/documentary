@@ -2,6 +2,7 @@ module Workflows
   class Job
     FILE_FORMAT = ENV.fetch('FILE_FORMAT', 'tiff')
     GDRIVE_FOLDER_ID = ENV.fetch('GDRIVE_FOLDER_ID', nil)
+    EMAIL_ADDRESS = ENV.fetch('EMAIL_ADDRESS', nil)
 
     attr_accessor :directory, :files_to_process, :logger
 
@@ -40,7 +41,7 @@ module Workflows
 
     def merge
       logger.info("Merging all PDFs.")
-      cmd = "gs -dDownsampleColorImages=true -dColorImageResolution=150 -sDEVICE=pdfwrite -dPDFA=2 -dBATCH -dNOPAUSE -sProcessColorModel=DeviceRGB -sColorConversionStrategy=/RGB -sPDFACompatibilityPolicy=1 -sOutputFile=#{directory.path}/postprocessed.pdf #{directory.path}/*.#{FILE_FORMAT}.pdf"
+      cmd = "gs -dDownsampleColorImages=true -dColorImageResolution=150 -sDEVICE=pdfwrite -dPDFA=2 -dBATCH -dNOPAUSE -sProcessColorModel=DeviceRGB -sColorConversionStrategy=/RGB -sPDFACompatibilityPolicy=1 -sOutputFile=#{postprocessed_file} #{directory.path}/*.#{FILE_FORMAT}.pdf"
       Command.(cmd)
     end
 
@@ -52,12 +53,25 @@ module Workflows
 
       logger.info("Uploading finished pdf.")
       session = GoogleDrive::Session.from_config('config.json')
-      session.upload_from_file("#{directory.path}/postprocessed.pdf", safe_filename, { parents: [GDRIVE_FOLDER_ID], convert: false })
+      session.upload_from_file(postprocessed_file, safe_filename, { parents: [GDRIVE_FOLDER_ID], convert: false })
+    end
+
+    def send_email
+      if !EMAIL_ADDRESS
+        logger.info('Skipped email sending.')
+        return
+      end
+
+      Mailer.(postprocessed_file)
     end
 
     def verify
       # download
       # count pages
+    end
+
+    def postprocessed_file
+      "#{directory.path}/postprocessed.pdf"
     end
 
     def clean_up
