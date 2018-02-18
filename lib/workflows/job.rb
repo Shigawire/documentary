@@ -31,6 +31,7 @@ module Workflows
       unless any_pages_failed
         merge
         upload
+        send_email
         verify
       else
         logger.error('Skipping postprocessing because some pages failed to process.')

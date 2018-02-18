@@ -8,6 +8,7 @@ udevadm trigger
 
 #make app owner
 chown -R app:app /usr/src/app
+chown -R app:app /data
 
 echo "Starting subprocesses..."
 supervisord -n -c /etc/supervisor/supervisord.conf

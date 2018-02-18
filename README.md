@@ -36,8 +36,10 @@ GOOGLE_OAUTH_CLIENT_ID
 GOOGLE_OAUTH_CLIENT_SECRET
 ```
 
-Then go to the Resin.io dashboard, start a local shell into the container and run `.auth.rb`. This will open an interactive shell guiding you through the OAuth Token exchange process required for GDrive upload.
-This command must only be run once.
+Then go to the Resin.io dashboard, start a local shell into the container and run `./auth.sh`.
+This will open an interactive shell guiding you through the OAuth Token exchange process required for GDrive upload.
+
+**This command must only be run once. OAuth credentials are stored in the persistent /data volue**
 
 ## Email sending
 
