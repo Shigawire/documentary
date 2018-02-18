@@ -8,9 +8,8 @@ ENV BUILD_PACKAGES="ruby-dev gcc automake git libtool make libxslt-dev libxml2-d
 ENV RUNTIME_PACKAGES="locales sane-utils ghostscript ruby supervisor redis-server libconfuse-dev imagemagick"
 ENV TESSDATA_PREFIX=/usr/local/share
 
-COPY . /usr/src/app
-COPY scripts/99-saned.rules /etc/udev/rules.d/99-sanebd.rules
-COPY scripts/supervisor.conf /etc/supervisor/conf.d/app.conf
+COPY src/scanbd-code-244-trunk /tmp/scanbd-src
+COPY Gemfile* /usr/src/app/
 
 # install dependencies
 RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
@@ -45,11 +44,11 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     curl -sSL -o /usr/local/share/tessdata/eng.traineddata https://github.com/tesseract-ocr/tessdata/raw/3.04.00/eng.traineddata && \
     cd / && \
     rm -rf "$tmpdir" && \
-    # install scanbd
-    cd /usr/src/app/src/scanbd-code-244-trunk && \
+    cd /tmp/scanbd-src && \
     ./configure --enable-udev && \
     make all && \
     make install && \
+    rm -rf /tmp/scanbd-src && \
     # install ruby app
     gem install bundler && \
     cd /usr/src/app && \
@@ -62,8 +61,10 @@ RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# keep this here. When installing sane, this file would be overwritten.
+COPY . /usr/src/app
 COPY scripts/scanbd.conf /usr/local/etc/scanbd/scanbd.conf
+COPY scripts/99-saned.rules /etc/udev/rules.d/99-sanebd.rules
+COPY scripts/supervisor.conf /etc/supervisor/conf.d/app.conf
 
 WORKDIR /usr/src/app
 CMD ["/usr/src/app/run.sh"]
