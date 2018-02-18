@@ -4,8 +4,8 @@ ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
 
-ENV BUILD_PACKAGES="ruby-dev gcc automake git libtool make libxslt-dev libxml2-dev zlib1g-dev build-essential libsane-dev libudev-dev libusb-dev libdbus-1-dev curl"
-ENV RUNTIME_PACKAGES="locales sane-utils ghostscript ruby supervisor redis-server libconfuse-dev"
+ENV BUILD_PACKAGES="ruby-dev gcc automake git libtool make libxslt-dev libxml2-dev zlib1g-dev build-essential libsane-dev libudev-dev libusb-dev libdbus-1-dev curl libtiff-dev"
+ENV RUNTIME_PACKAGES="locales sane-utils ghostscript ruby supervisor redis-server libconfuse-dev imagemagick"
 ENV TESSDATA_PREFIX=/usr/local/share
 
 COPY . /usr/src/app
