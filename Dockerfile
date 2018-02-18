@@ -10,7 +10,7 @@ ENV TESSDATA_PREFIX=/usr/local/share
 
 COPY . /usr/src/app
 COPY scripts/99-saned.rules /etc/udev/rules.d/99-sanebd.rules
-COPY scripts/supervisor.conf /etc/supervisor/supervisord.conf
+COPY scripts/supervisor.conf /etc/supervisor/conf.d/app.conf
 
 # install dependencies
 RUN apt-get update && apt-get -y install $RUNTIME_PACKAGES $BUILD_PACKAGES && \
