@@ -8,8 +8,8 @@ module Workflows
     end
 
     def process
-      enhance
       deskew
+      normalize
       perform_ocr
       destroy! if empty?
     end
@@ -24,16 +24,16 @@ module Workflows
 
     private
 
-    def enhance
-      Command.("mogrify #{path} -normalize -level 10%,90% -sharpen 0x1")
-    end
-
     def deskew
       Command.("convert #{path} -deskew 80% +repage #{deskewed_path}")
     end
+    
+    def normalize
+      Command.("convert #{deskewed_path} -normalize #{normalized_path}")
+    end
 
     def perform_ocr
-      self.ocr_result = Command.("tesseract -l deu+eng #{deskewed_path} #{path} pdf")
+      self.ocr_result = Command.("tesseract -l deu+eng #{normalized_path} #{path} pdf")
     end
 
     def destroy!
@@ -42,6 +42,10 @@ module Workflows
 
     def page_basename
       path.basename(".#{FILE_FORMAT}")
+    end
+
+    def normalized_path
+      path.dirname.join("#{page_basename}_normalized.#{FILE_FORMAT}")
     end
 
     def deskewed_path
