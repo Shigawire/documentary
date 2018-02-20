@@ -96,6 +96,10 @@ module Workflows
       processed_pages.size == pages.size
     end
 
+    def uploading?
+      File.size? postprocessed_file
+    end
+
     def lcd_status
       "#{pad processed_pages.size}/#{pad pages.size}"
     end

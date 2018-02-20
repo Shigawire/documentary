@@ -44,14 +44,14 @@ class LCD
   end
 
   def row_3_text
-    return '' unless current_job
+    return ''                        unless current_job
     return 'Postprocessing complete' if current_job.postprocessing_complete?
     current_pages.map(&:lcd_page_number).join('')
   end
 
   def row_4_text
-    return '' unless current_job
-    return 'Uploading...' if current_job.postprocessing_complete?
+    return ''             unless current_job || current_job.postprocessing_complete?
+    return 'Uploading...' if current_job.uploading?
     current_pages.map(&:lcd_status).join('')
   end
 
