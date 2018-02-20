@@ -15,7 +15,8 @@ module Workflows
     end
 
     def empty?
-      ocr_result.match(/Empty page!!/)
+      reader = PDF::Reader.new("#{path}.pdf")
+      reader.pages.first.text.empty?
     end
 
     def pdf_path
@@ -27,7 +28,7 @@ module Workflows
     def deskew
       Command.("convert #{path} -deskew 80% +repage #{deskewed_path}")
     end
-    
+
     def normalize
       Command.("convert #{deskewed_path} -normalize #{normalized_path}")
     end
