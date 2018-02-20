@@ -68,4 +68,4 @@ COPY scripts/99-saned.rules /etc/udev/rules.d/99-sanebd.rules
 COPY scripts/supervisor.conf /etc/supervisor/conf.d/app.conf
 
 WORKDIR /usr/src/app
-CMD ["/usr/src/app/run.sh"]
+CMD ["modprobe", "i2c-dev", "&&", "/usr/src/app/run.sh"]

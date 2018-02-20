@@ -9,10 +9,11 @@ module Workflows
     def initialize(directory)
       self.logger = Logger.new(STDOUT)
       self.directory = directory
-      self.files_to_process = Dir.glob("#{directory.path}/*.#{FILE_FORMAT}")
+      self.files_to_process = Dir.glob("#{directory.path}/*.#{FILE_FORMAT}").grep(/\d\.#{Regexp.quote(FILE_FORMAT)}$/)
     end
 
     def perform
+      Redis.current.set('current_job', directory.path)
       if files_to_process.none?
         logger.info('No files to proces, cleaning up.')
         clean_up
@@ -76,6 +77,8 @@ module Workflows
     end
 
     def clean_up
+      Redis.current.set('current_job', nil)
+
       if !directory.to_be_removed
         logger.info("Keeping directory #{directory.path}.")
         return
@@ -87,6 +90,36 @@ module Workflows
 
     def safe_filename
       Time.now.strftime("%Y-%m-%d - %H_%M_%S.pdf")
+    end
+
+    def postprocessing_complete?
+      processed_pages.size == pages.size
+    end
+
+    def lcd_status
+      "#{pad processed_pages.size}/#{pad pages.size}"
+    end
+
+    def pad(number, characters = 2)
+      "%02d" % number
+    end
+
+    def duration
+      # get date of one of the scanfiles
+      duration = Time.now - File.ctime(files_to_process.first)
+      seconds_to_time(duration.to_i)
+    end
+
+    def seconds_to_time(seconds)
+      [seconds / 60 % 60, seconds % 60].map { |t| t.to_s.rjust(2,'0') }.join(':')
+    end
+
+    def pages
+      files_to_process.map { |f| Workflows::Page.new(path: Pathname.new(f)) }
+    end
+
+    def processed_pages
+      pages.select { |p| p.finished? }
     end
 
     class Postprocessor
