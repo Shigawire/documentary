@@ -13,7 +13,7 @@ module Workflows
     end
 
     def perform
-      Redis.current.set('current_job', directory.path)
+      Redis.current.rpush('jobs', directory.path)
       if files_to_process.none?
         logger.info('No files to proces, cleaning up.')
         clean_up
@@ -23,7 +23,7 @@ module Workflows
       batch.on(:complete, Postprocessor, directory: directory.to_h)
       batch.jobs do
         files_to_process.each do |path|
-          Workers::PageWorker.perform_async(path)
+          Workers::PageWorker.perform(path)
         end
       end
     end
@@ -77,7 +77,7 @@ module Workflows
     end
 
     def clean_up
-      Redis.current.set('current_job', nil)
+      Redis.current.lpop('jobs')
 
       if !directory.to_be_removed
         logger.info("Keeping directory #{directory.path}.")

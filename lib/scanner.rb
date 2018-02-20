@@ -13,8 +13,14 @@ class Scanner
   end
 
   def perform
+    Redis.current.set('scanning', 'true')
     cmd = "scanimage -d \"#{SANE_DEVICE_NAME}\" -l 0 -y 0 -x 210 -y 297 --page-width 210 --page-height 297 --rollerdeskew=yes --contrast 127 --batch=\"#{scans_path}\" --source \"#{SANE_SOURCE_NAME}\" --resolution #{DEFAULT_RESOLUTION} --mode Gray --format #{FILE_FORMAT}"
-    Command.(cmd)
+    begin
+      Command.(cmd)
+    rescue Exception => e
+      logger.error "Scanner failed: #{e.message}"
+    end
+    Redis.current.del('scanning')
   end
 
   def scans_path
