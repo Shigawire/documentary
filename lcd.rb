@@ -26,6 +26,7 @@ class LCD
 
   def display_on
     return if display_on?
+    display.clear
     display.on
     display.backlight_on
     self.display_status = true

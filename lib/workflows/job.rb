@@ -23,7 +23,7 @@ module Workflows
       batch.on(:complete, Postprocessor, directory: directory.to_h)
       batch.jobs do
         files_to_process.each do |path|
-          Workers::PageWorker.perform(path)
+          Workers::PageWorker.perform_async(path)
         end
       end
     end
