@@ -1,0 +1,9 @@
+Jobs:02  Docs:04
+05/17:
+01   02   03   05
+ENH  DESK OCR  PDF
+
+Jobs:02  Docs:04
+17/17   ok (10:14)
+Merge   ok (05.45MB)
+Upload  ok

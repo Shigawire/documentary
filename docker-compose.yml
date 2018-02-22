@@ -1,0 +1,23 @@
+version: '3'
+services:
+  app: &app
+    image: shigawire/documentary
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/usr/src/app
+    command: bash
+    environment:
+      SANE_DEVICE_NAME: test
+      SANE_SOURCE_NAME: Automatic Document Feeder
+      REDIS_URL: redis://redis/10
+    depends_on: [redis]
+  worker:
+    <<: *app
+    command: sidekiq -c 10 -r /usr/src/app/boot.rb
+  ocr_worker:
+    <<: *app
+    command: sidekiq -c 4 -q ocr -r /usr/src/app/boot.rb
+  redis:
+    image: redis

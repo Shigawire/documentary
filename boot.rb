@@ -1,0 +1,18 @@
+require 'tmpdir'
+require 'logger'
+require 'fileutils'
+require 'rubygems'
+require 'bundler/setup'
+require 'sidekiq'
+require 'sidekiq/batch'
+require 'active_support/inflector' # sidekiq/batch uses constantize
+require 'google_drive'
+require 'mail'
+require 'pdf-reader'
+
+require_relative 'lib/command'
+require_relative 'lib/directory'
+require_relative 'lib/scanner'
+require_relative 'lib/mailer'
+require_relative 'lib/workers'
+require_relative 'lib/workflows'
