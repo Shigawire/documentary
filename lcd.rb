@@ -26,6 +26,7 @@ class LCD
 
   def display_on
     return if display_on?
+    display.clear
     display.on
     display.backlight_on
     self.display_status = true
@@ -123,7 +124,7 @@ class LCD
     display.text(text.upcase.ljust(20), line)
   end
 
-  def write_status
+  def print_status
     display_print(row_1_text, 0)
     display_print(row_2_text, 1)
     display_print(row_3_text, 2)
@@ -133,11 +134,11 @@ class LCD
   def loop
     display_timeout = Time.now
     while true do
-
-      display_on if scanning?
-      write_status if display_on?
-
-      display_timeout = Time.now if current_job || scanning?
+      if current_job || scanning?
+        display_on
+        display_timeout = Time.now
+        print_status
+      end
       display_off if (Time.now - display_timeout) > DISPLAY_TIMEOUT
       sleep 1
     end

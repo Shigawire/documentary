@@ -1,6 +1,6 @@
 GIT
-  remote: https://github.com/daisukesuzuki/i2c-lcd
-  revision: 15130b290c5bd10f5f296fbc3251f13228263e3b
+  remote: https://github.com/Shigawire/i2c-lcd
+  revision: 4d179d1dd995143d20ddf71a728f2440ed0589c6
   specs:
     i2c-lcd (0.0.3)
       i2c
