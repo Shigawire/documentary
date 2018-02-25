@@ -21,6 +21,7 @@ class LCD
       self.display.clear
     rescue
       self.logger.warn 'No display present.'
+      sleep
     end
   end
 
