@@ -1,4 +1,4 @@
-FROM resin/armv7hf-debian:stretch
+FROM balenalib/armv7hf-debian:stretch
 
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
