@@ -3,6 +3,8 @@ module Workflows
     FILE_FORMAT = ENV.fetch('FILE_FORMAT', 'tiff')
     GDRIVE_FOLDER_ID = ENV.fetch('GDRIVE_FOLDER_ID', nil)
     EMAIL_ADDRESS = ENV.fetch('EMAIL_ADDRESS', nil)
+    NORMALIZED_SUFFIX = '_normalized'.freeze
+    UPLOAD_URL = ENV.fetch('UPLOAD_URL', nil)
 
     attr_accessor :directory, :files_to_process, :logger
 
@@ -15,7 +17,7 @@ module Workflows
     def perform
       Redis.current.rpush('jobs', directory.path)
       if files_to_process.none?
-        logger.info('No files to proces, cleaning up.')
+        logger.info('No files to process, cleaning up.')
         clean_up
       end
 
@@ -43,11 +45,11 @@ module Workflows
 
     def merge
       logger.info("Merging all PDFs.")
-      cmd = "gs -dDownsampleColorImages=true -dColorImageResolution=150 -sDEVICE=pdfwrite -dPDFA=2 -dBATCH -dNOPAUSE -sProcessColorModel=DeviceRGB -sColorConversionStrategy=/RGB -sPDFACompatibilityPolicy=1 -sOutputFile=#{postprocessed_file} #{directory.path}/*.#{FILE_FORMAT}.pdf"
-      Command.(cmd)
+      cmd = "convert -limit memory 0 -limit map 0 #{directory.path}/*#{NORMALIZED_SUFFIX}.#{FILE_FORMAT} - | zip > #{postprocessed_compressed_file}"
+      Command.call(cmd)
     end
 
-    def upload
+    def upload_gdrive
       if !GDRIVE_FOLDER_ID
         logger.info('Skipped upload to Google Drive.')
         return
@@ -56,6 +58,27 @@ module Workflows
       logger.info("Uploading finished pdf.")
       session = GoogleDrive::Session.from_config('/data/google-oauth-config.json')
       session.upload_from_file(postprocessed_file, safe_filename, { parents: [GDRIVE_FOLDER_ID], convert: false })
+    end
+
+    def upload
+      if !UPLOAD_URL
+        logger.info('Skipping uploading to UPLOAD_URL.')
+        return
+      end
+
+      logger.info('Uploading file to UPLOAD_URL.')
+
+      RestClient.post(
+        UPLOAD_URL,
+        File.read(postprocessed_compressed_file),
+        content_type: 'application/octet-stream'
+      )
+
+      logger.info('Uploaded file to UPLOAD_URL.')
+    end
+
+    def postprocessed_compressed_file
+      "#{postprocessed_file}"
     end
 
     def send_email
@@ -73,7 +96,7 @@ module Workflows
     end
 
     def postprocessed_file
-      "#{directory.path}/postprocessed.pdf"
+      "#{directory.path}/postprocessed.pdf.zip"
     end
 
     def clean_up

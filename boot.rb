@@ -8,7 +8,7 @@ require 'sidekiq/batch'
 require 'active_support/inflector' # sidekiq/batch uses constantize
 require 'google_drive'
 require 'mail'
-require 'pdf-reader'
+require 'rest-client'
 
 require_relative 'lib/command'
 require_relative 'lib/directory'
