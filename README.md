@@ -39,6 +39,10 @@ The included `lcd.rb` controls a HD44780 4x20 LCD, controlled via I2C. [This one
 
 A suitable case to hold display and Pi can be found [here](https://www.ebay.de/itm/20x4-16x2-LCD-case-for-Raspberry-Pi-2-3-model-B-Pi-1-Model-B-Zero-Arduino/122976819365?ssPageName=STRK%3AMEBIDX%3AIT&var=423424123333&_trksid=p2057872.m2749.l2649)
 
+## HTTP post upload
+Documents can be uploaded to any `UPLOAD_URL` set via environment variable.
+Basic Authentication credentials should be provided as part of the URI (scheme://username:password@hostname:port/path).
+
 ## Google Drive upload
 If you want upload scanned documents to Google Drive, create a Google Project with OAuth credentials:
 https://github.com/gimite/google-drive-ruby/blob/master/doc/authorization.md#command-line
