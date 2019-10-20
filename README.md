@@ -4,6 +4,10 @@ Attach it to a Raspberry Pi and get your scans automatically OCR'd and uploaded 
 
 Built on top of Resin.io.
 
+## !Important!
+In order to allow device mounts, set a device-specific environment variable `UDEV` to `1`. 
+More information: https://www.balena.io/docs/reference/base-images/base-images/#how-the-images-work-at-runtime
+
 ## Installation
 If you don't already have an account, go to [https://resin.io](https://resin.io) and create one.
 Create a new application inside the dashboard and configure a new device (e.g. Raspberry Pi3).
