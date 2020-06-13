@@ -33,6 +33,7 @@ module Workflows
     def postprocess_scanfiles(any_pages_failed:)
       unless any_pages_failed
         merge
+        upload_gdrive
         upload
         send_email
         verify
