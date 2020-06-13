@@ -6,12 +6,13 @@ module Workflows
     NORMALIZED_SUFFIX = '_normalized'.freeze
     UPLOAD_URL = ENV.fetch('UPLOAD_URL', nil)
 
-    attr_accessor :directory, :files_to_process, :logger
+    attr_accessor :directory, :files_to_process, :logger, :compress
 
     def initialize(directory)
       self.logger = Logger.new(STDOUT)
       self.directory = directory
       self.files_to_process = Dir.glob("#{directory.path}/*.#{FILE_FORMAT}").grep(/\d\.#{Regexp.quote(FILE_FORMAT)}$/)
+      self.compress = false
     end
 
     def perform
@@ -46,7 +47,11 @@ module Workflows
 
     def merge
       logger.info("Merging all PDFs.")
-      cmd = "convert -limit memory 0 -limit map 0 #{directory.path}/*#{NORMALIZED_SUFFIX}.#{FILE_FORMAT} - | zip > #{postprocessed_compressed_file}"
+      if compress
+        cmd = "convert -limit memory 0 -limit map 0 #{directory.path}/*#{NORMALIZED_SUFFIX}.#{FILE_FORMAT} - | zip > #{postprocessed_file}"
+      else
+        cmd = "convert -limit memory 0 -limit map 0 #{directory.path}/*#{NORMALIZED_SUFFIX}.#{FILE_FORMAT} #{postprocessed_file}"
+      end
       Command.call(cmd)
     end
 
@@ -71,15 +76,11 @@ module Workflows
 
       RestClient.post(
         UPLOAD_URL,
-        File.read(postprocessed_compressed_file),
-        content_type: 'application/octet-stream'
+        File.read(postprocessed_file),
+        content_type: "application/#{compress ? 'zip' : 'pdf'}"
       )
 
       logger.info('Uploaded file to UPLOAD_URL.')
-    end
-
-    def postprocessed_compressed_file
-      "#{postprocessed_file}"
     end
 
     def send_email
@@ -97,7 +98,7 @@ module Workflows
     end
 
     def postprocessed_file
-      "#{directory.path}/postprocessed.pdf.zip"
+      "#{directory.path}/postprocessed.pdf#{compress ? '.zip' : ''}"
     end
 
     def clean_up
