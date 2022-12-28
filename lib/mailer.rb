@@ -1,9 +1,9 @@
 class Mailer
-  EMAIL_ADDRESS = ENV.fetch('EMAIL_ADDRESS', nil)
+  FROM_EMAIL_ADDRESS = ENV.fetch('FROM_EMAIL_ADDRESS', nil)
+  TO_EMAIL_ADDRESS = ENV.fetch('EMAIL_ADDRESS', nil)
   SMTP_HOST = ENV.fetch('SMTP_HOST', nil)
   SMTP_USERNAME = ENV.fetch('SMTP_USERNAME', nil)
   SMTP_PASSWORD = ENV.fetch('SMTP_PASSWORD', nil)
-
 
   def self.call(file)
     unless SMTP_HOST && SMTP_USERNAME && SMTP_PASSWORD
@@ -22,9 +22,9 @@ class Mailer
     end
 
     Mail.deliver do
-      from     'scanbot@urmel.io'
-      to       EMAIL_ADDRESS
-      subject  'Scanfile from Scanbot'
+      from     FROM_EMAIL_ADDRESS
+      to       TO_EMAIL_ADDRESS
+      subject  'Scanfile from documentary'
       body     ''
       add_file "#{file}"
     end
